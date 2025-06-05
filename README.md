@@ -87,3 +87,26 @@ The engine plans to leverage several powerful Python libraries:
 *   **Dear PyGui / ImGui bindings:** For creating editor tools and in-game user interfaces.
 
 The choice of specific libraries may evolve as development progresses, prioritizing flexibility, performance, and community support.
+
+## 8. Basic GUI for the Engine
+
+A basic Graphical User Interface (GUI) is essential for improving the usability and workflow of the game engine. The initial GUI will focus on providing tools for common development tasks.
+
+*   **Purpose:**
+    *   To provide a visual interface for managing game projects, scenes, and assets.
+    *   To simplify the process of creating, modifying, and debugging game content.
+    *   To offer a more intuitive way to interact with the engine's features compared to pure code-based interaction.
+
+*   **Key Components (Initial Thoughts):**
+    *   **Project Manager:** For creating, opening, and managing game projects.
+    *   **Scene Editor:** A visual tool to place, transform (move, rotate, scale), and organize game objects within a scene. This might include a 2D or 3D viewport.
+    *   **Asset Browser:** To view, import, and manage game assets (images, models, sounds, scripts).
+    *   **Property Inspector:** To view and edit the properties of selected game objects or assets. For example, changing the position of an object, or the texture of a model.
+    *   **Console Window:** To display engine logs, errors, and debug messages.
+    *   **Game Preview Window:** To run and test the current scene or game directly from the editor.
+
+*   **Technology Considerations:**
+    *   As mentioned in "Potential External Libraries," libraries like **Dear PyGui** or other **ImGui bindings** (e.g., `imgui-bundle`) are strong candidates for building the editor GUI. These libraries are well-suited for creating developer tools due to their immediate mode rendering paradigm, which simplifies UI development for dynamic content.
+    *   The GUI will be designed to be modular, allowing for new tools and windows to be added as the engine evolves.
+
+This GUI will be developed iteratively, starting with the most critical tools and gradually expanding its capabilities.

@@ -1,0 +1,7 @@
+dearpygui
+pygame
+pyopengl
+numpy
+pyglet
+pybullet
+pillow
