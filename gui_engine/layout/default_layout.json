@@ -1,0 +1,21 @@
+{
+  "type": "horizontal",
+  "children": [
+    {"type": "scene_panel", "width": 200},
+    {
+      "type": "vertical",
+      "children": [
+        {"type": "game_viewport_panel"},
+        {"type": "console_panel", "height": 120}
+      ]
+    },
+    {
+      "type": "vertical",
+      "width": 250,
+      "children": [
+        {"type": "inspector_panel", "height": 300},
+        {"type": "asset_browser_panel", "height": 200}
+      ]
+    }
+  ]
+}
