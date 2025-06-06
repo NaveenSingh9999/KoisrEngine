@@ -109,9 +109,16 @@ def main():
             elif app_state['mode'] == 'editor' and gui_engine:
                 gui_engine.handle_event(event)
         screen.fill((30, 32, 36))
+        # --- Transition logic: only create GuiEngine ONCE when switching to editor ---
         if app_state['mode'] == 'home' and home_screen:
             home_screen.update(dt)
             home_screen.draw(screen)
+            # If mode switched, initialize editor and destroy HomeScreen
+            if app_state['mode'] == 'editor' and gui_engine is None:
+                # Switch to OpenGL surface for editor
+                screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF | pygame.OPENGL)
+                gui_engine = GuiEngine(screen, layout_config_path=None)
+                home_screen = None  # Remove reference to HomeScreen so it is not updated/drawn
         elif app_state['mode'] == 'editor' and gui_engine:
             gui_engine.update(dt)
             gui_engine.draw()
