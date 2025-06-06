@@ -1,5 +1,5 @@
 import json
-from gui_engine.panels.scene_panel import ScenePanel, InspectorPanel, AssetBrowserPanel, ConsolePanel, GameViewportPanel, ToolbarPanel
+from gui_engine.panels import *
 from koisrgui.layouts.horizontal import HorizontalLayout
 from koisrgui.layouts.vertical import VerticalLayout
 
