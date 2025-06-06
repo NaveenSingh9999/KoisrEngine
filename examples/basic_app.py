@@ -1,3 +1,4 @@
+# examples/basic_app.py
 import pygame
 from koisrgui.core.manager import GUIManager
 from koisrgui.widgets.button import Button
@@ -8,8 +9,8 @@ pygame.init()
 screen = pygame.display.set_mode((800, 600), pygame.DOUBLEBUF)
 gui = GUIManager(screen)
 
-label = Label(100, 50, 200, 30, "Welcome to KoisrEngine!", style=DARK_THEME)
-btn = Button(100, 100, 120, 40, "Click Me", on_click=lambda: print("Button clicked!"), style=DARK_THEME)
+label = Label(100, 50, 200, 30, "Hello, koisrgui!", style=DARK_THEME)
+btn = Button(100, 100, 120, 40, "Click Me", on_click=lambda: print("Clicked!"), style=DARK_THEME)
 gui.add_widget(label)
 gui.add_widget(btn)
 
