@@ -37,6 +37,8 @@ def main():
         nonlocal screen, gui_engine, home_screen, engine_backend
         global_state['project_path'] = project_path
         screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF | pygame.OPENGL)
+        pygame.font.quit()
+        pygame.font.init()
         if engine_backend is None:
             from engine.engine import Engine
             engine_backend = Engine()
