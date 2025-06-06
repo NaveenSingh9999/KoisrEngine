@@ -3,6 +3,8 @@ import os
 import sys
 import pygame
 from gui_engine.core.gui_engine import GuiEngine
+from gui_engine.screens.home_screen import HomeScreen
+from gui_engine.state.project_manager import ProjectManager
 
 # Ensure project root is in sys.path for imports
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -18,22 +20,40 @@ def main():
     pygame.display.set_caption("KoisrEditor")
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF | pygame.OPENGL)
 
-    # Splash/loading screen (optional, can be expanded in startup/loader.py)
-    screen.fill((30, 32, 36))
-    font = pygame.font.SysFont("Arial", 32)
-    text = font.render("Loading KoisrEditor...", True, (220, 220, 220))
-    screen.blit(text, (SCREEN_WIDTH // 2 - text.get_width() // 2, SCREEN_HEIGHT // 2 - text.get_height() // 2))
-    pygame.display.flip()
+    # Splash/loading screen
+    from app.startup.loader import show_splash
+    show_splash(screen)
 
-    # Load config/settings (theme, layout, last project, etc.)
-    # For now, use defaults. Later: load from app/config/settings.json
-    # config = ...
+    project_manager = ProjectManager()
+    app_state = {'mode': 'home', 'project_path': None}
+    gui_engine = None
+    home_screen = None
 
-    # Initialize GUI engine
-    gui_engine = GuiEngine(screen)
+    def on_create():
+        # TODO: Show project creation dialog
+        print("Create New Project clicked")
+        # For now, just switch to editor
+        app_state['mode'] = 'editor'
+        app_state['project_path'] = None
 
-    # TODO: Project manager integration (open/create project)
-    # TODO: Load previous project or show project selection dialog
+    def on_open():
+        # TODO: Show file dialog to select .koisrproj
+        print("Open Existing Project clicked")
+        # For now, just switch to editor
+        app_state['mode'] = 'editor'
+        app_state['project_path'] = None
+
+    def on_resume():
+        last = project_manager.get_last_project()
+        print(f"Resume Last Project: {last}")
+        app_state['mode'] = 'editor'
+        app_state['project_path'] = last
+
+    # Show HomeScreen first
+    home_screen = HomeScreen(
+        SCREEN_WIDTH, SCREEN_HEIGHT, project_manager,
+        on_create=on_create, on_open=on_open, on_resume=on_resume
+    )
 
     clock = pygame.time.Clock()
     running = True
@@ -42,11 +62,21 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            gui_engine.handle_event(event)
+            if app_state['mode'] == 'home':
+                home_screen.handle_event(event)
+            elif app_state['mode'] == 'editor' and gui_engine:
+                gui_engine.handle_event(event)
         # TODO: Game engine update (if running game in editor)
-        gui_engine.update(dt)
-        screen.fill((30, 32, 36))  # Editor background
-        gui_engine.draw()
+        screen.fill((30, 32, 36))
+        if app_state['mode'] == 'home':
+            home_screen.update(dt)
+            home_screen.draw(screen)
+            # If mode switched, initialize editor
+            if app_state['mode'] == 'editor' and gui_engine is None:
+                gui_engine = GuiEngine(screen)
+        elif app_state['mode'] == 'editor' and gui_engine:
+            gui_engine.update(dt)
+            gui_engine.draw()
         pygame.display.flip()
 
     pygame.quit()
