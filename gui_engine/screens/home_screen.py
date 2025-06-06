@@ -71,3 +71,4 @@ class HomeScreen(Panel):
         # Draw all children
         for child in self.children:
             child.draw(surface)
+        pygame.display.update((self.x, self.y, self.width, self.height))
