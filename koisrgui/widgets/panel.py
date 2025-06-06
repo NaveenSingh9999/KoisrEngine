@@ -1,7 +1,7 @@
 # koisrgui/widgets/panel.py
 import pygame
 from koisrgui.core.widget import Widget
-
+# gre
 class Panel(Widget):
     def __init__(self, x, y, width, height, title=None, style=None):
         super().__init__(x, y, width, height)
