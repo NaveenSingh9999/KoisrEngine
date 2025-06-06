@@ -24,10 +24,10 @@ class GuiEngine:
         self.gui.update(dt)
 
     def draw(self):
-        if self.engine:
-            self.engine.render()
         self.layout_manager.draw(self.screen)
         self.gui.draw()
+        if self.engine:
+            self.engine.render()
 
     def handle_event(self, event):
         self.layout_manager.handle_event(event)
