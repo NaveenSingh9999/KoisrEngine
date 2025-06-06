@@ -4,9 +4,10 @@ from koisrgui.layouts.horizontal import HorizontalLayout
 from koisrgui.layouts.vertical import VerticalLayout
 
 class LayoutManager:
-    def __init__(self, gui, state):
+    def __init__(self, gui, state, engine):
         self.gui = gui
         self.state = state
+        self.engine = engine
         self.root_layout = None
 
     def load_layout(self, path):
@@ -16,23 +17,30 @@ class LayoutManager:
         self.gui.add_widget(self.root_layout)
 
     def load_default_layout(self):
-        # Hardcoded default layout for now, with explicit x, y, width, height
-        self.root_layout = HorizontalLayout(0, 0)
-        scene_panel = ScenePanel(0, 0, 200, 600)
-        center_layout = VerticalLayout(200, 0)
-        game_viewport_panel = GameViewportPanel(200, 0, 600, 480)
-        console_panel = ConsolePanel(200, 480, 600, 120)
-        center_layout.add_child(game_viewport_panel)
-        center_layout.add_child(console_panel)
-        right_layout = VerticalLayout(800, 0)
-        inspector_panel = InspectorPanel(800, 0, 250, 300)
-        asset_browser_panel = AssetBrowserPanel(800, 300, 250, 300)
-        right_layout.add_child(inspector_panel)
-        right_layout.add_child(asset_browser_panel)
-        self.root_layout.add_child(scene_panel)
-        self.root_layout.add_child(center_layout)
-        self.root_layout.add_child(right_layout)
-        self.gui.add_widget(self.root_layout)
+        # Real editor layout with all panels
+        from gui_engine.panels.scene_panel import ScenePanel
+        from gui_engine.panels.inspector_panel import InspectorPanel
+        from gui_engine.panels.asset_browser_panel import AssetBrowserPanel
+        from gui_engine.panels.console_panel import ConsolePanel
+        from gui_engine.panels.game_viewport_panel import GameViewportPanel
+        from gui_engine.panels.toolbar_panel import ToolbarPanel
+        from koisrgui.layouts.horizontal import HorizontalLayout
+        from koisrgui.layouts.vertical import VerticalLayout
+        # Top toolbar
+        toolbar = ToolbarPanel(self.engine, 0, 0, 1200, 40)
+        # Main split
+        left = ScenePanel(self.engine, 0, 40, 200, 600)
+        center = GameViewportPanel(self.engine, 200, 40, 800, 480)
+        right = InspectorPanel(self.engine, 1000, 40, 200, 600)
+        bottom_left = AssetBrowserPanel(self.engine, 0, 640, 600, 160)
+        bottom_right = ConsolePanel(self.engine, 600, 640, 600, 160)
+        # Add to GUI
+        self.gui.add_widget(toolbar)
+        self.gui.add_widget(left)
+        self.gui.add_widget(center)
+        self.gui.add_widget(right)
+        self.gui.add_widget(bottom_left)
+        self.gui.add_widget(bottom_right)
 
     def _parse_layout(self, cfg):
         # TODO: Parse layout config to build layout tree

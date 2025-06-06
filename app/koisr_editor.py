@@ -32,12 +32,15 @@ def main():
     # Store project path in a global state
     global_state = {'project_path': None}
 
+    engine_backend = None
     def enter_editor(project_path):
+        nonlocal screen, gui_engine, home_screen, engine_backend
         global_state['project_path'] = project_path
-        # Switch to OpenGL surface for editor
-        nonlocal screen, gui_engine, home_screen
         screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF | pygame.OPENGL)
-        gui_engine = GuiEngine(screen, layout_config_path=None)  # Can load from config/layout.json if needed
+        if engine_backend is None:
+            from engine.engine import Engine
+            engine_backend = Engine()
+        gui_engine = GuiEngine(screen, layout_config_path=None, engine=engine_backend)
         home_screen = None
         app_state['mode'] = 'editor'
         print(f"[INFO] Entered editor with project: {project_path}")
