@@ -29,6 +29,19 @@ def main():
     gui_engine = None
     home_screen = None
 
+    # Store project path in a global state
+    global_state = {'project_path': None}
+
+    def enter_editor(project_path):
+        global_state['project_path'] = project_path
+        # Switch to OpenGL surface for editor
+        nonlocal screen, gui_engine, home_screen
+        screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF | pygame.OPENGL)
+        gui_engine = GuiEngine(screen, layout_config_path=None)  # Can load from config/layout.json if needed
+        home_screen = None
+        app_state['mode'] = 'editor'
+        print(f"[INFO] Entered editor with project: {project_path}")
+
     def on_create():
         # Open a file dialog to select a directory for the new project
         import tkinter as tk
@@ -45,8 +58,7 @@ def main():
                 project_manager.add_recent_project(project_path)
                 project_manager.set_last_project(project_path)
                 print(f"Created new project at {project_path}")
-                app_state['mode'] = 'editor'
-                app_state['project_path'] = project_path
+                enter_editor(project_path)
             else:
                 print("Project creation cancelled (no name)")
         else:
@@ -63,8 +75,7 @@ def main():
             project_manager.add_recent_project(file_path)
             project_manager.set_last_project(file_path)
             print(f"Opened project: {file_path}")
-            app_state['mode'] = 'editor'
-            app_state['project_path'] = file_path
+            enter_editor(file_path)
         else:
             print("Open project cancelled")
 
@@ -73,8 +84,7 @@ def main():
         if last and os.path.exists(last):
             print(f"Resuming last project: {last}")
             project_manager.set_last_project(last)
-            app_state['mode'] = 'editor'
-            app_state['project_path'] = last
+            enter_editor(last)
         else:
             print("No last project to resume or file missing.")
             app_state['mode'] = 'home'
@@ -94,18 +104,14 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if app_state['mode'] == 'home':
+            if app_state['mode'] == 'home' and home_screen:
                 home_screen.handle_event(event)
             elif app_state['mode'] == 'editor' and gui_engine:
                 gui_engine.handle_event(event)
         screen.fill((30, 32, 36))
-        if app_state['mode'] == 'home':
+        if app_state['mode'] == 'home' and home_screen:
             home_screen.update(dt)
             home_screen.draw(screen)
-            if app_state['mode'] == 'editor' and gui_engine is None:
-                # Switch to OpenGL surface for editor
-                screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF | pygame.OPENGL)
-                gui_engine = GuiEngine(screen)
         elif app_state['mode'] == 'editor' and gui_engine:
             gui_engine.update(dt)
             gui_engine.draw()
