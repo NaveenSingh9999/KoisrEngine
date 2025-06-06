@@ -13,6 +13,7 @@ class Button(Widget):
             self.set_style(style)
 
     def draw(self, surface):
+        print(f'[DEBUG] Button.draw: "{self.text}" at ({self.x},{self.y},{self.width},{self.height}) hovered={self.hovered}')
         color = self.style.get('bg', (60, 60, 60))
         if self.hovered:
             color = self.style.get('bg_hover', (80, 80, 80))

@@ -12,6 +12,7 @@ class Panel(Widget):
     def draw(self, surface):
         if not self.visible:
             return
+        print(f'[DEBUG] Panel.draw: {self.title} at ({self.x},{self.y},{self.width},{self.height})')
         color = self.style.get('bg', (50, 50, 50))
         border_radius = self.style.get('border_radius', 4)
         pygame.draw.rect(surface, color, (self.x, self.y, self.width, self.height), border_radius=border_radius)
