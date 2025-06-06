@@ -3,8 +3,8 @@ from koisrgui.widgets.label import Label
 from koisrgui.widgets.button import Button
 
 class ScenePanel(Panel):
-    def __init__(self, x, y, width, height, engine=None, style=None):
-        super().__init__(x, y, width, height, title="Scene", style=style)
+    def __init__(self, *args, engine=None, style=None, **kwargs):
+        super().__init__(*args, title="Scene", style=style, **kwargs)
         self.engine = engine
         self.selected_id = None
         self._build_ui()
@@ -34,21 +34,21 @@ class ScenePanel(Panel):
         super().draw(surface)
 
 class InspectorPanel(Panel):
-    def __init__(self, *args, **kwargs):
-        super().__init__(title="Inspector", *args, **kwargs)
+    def __init__(self, *args, engine=None, style=None, **kwargs):
+        super().__init__(title="Inspector", *args, style=style, **kwargs)
         # Add property widgets here
 
 class AssetBrowserPanel(Panel):
-    def __init__(self, *args, **kwargs):
-        super().__init__(title="Assets", *args, **kwargs)
+    def __init__(self, *args, engine=None, style=None, **kwargs):
+        super().__init__(title="Assets", *args, style=style, **kwargs)
         # Add asset tree/list here
 
 class ConsolePanel(Panel):
-    def __init__(self, *args, **kwargs):
-        super().__init__(title="Console", *args, **kwargs)
+    def __init__(self, *args, engine=None, style=None, **kwargs):
+        super().__init__(title="Console", *args, style=style, **kwargs)
         # Add log output widget here
 
 class GameViewportPanel(Panel):
-    def __init__(self, *args, **kwargs):
-        super().__init__(title="Game", *args, **kwargs)
+    def __init__(self, *args, engine=None, style=None, **kwargs):
+        super().__init__(title="Game", *args, style=style, **kwargs)
         # Add OpenGL texture view here

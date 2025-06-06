@@ -1,8 +1,8 @@
 from koisrgui.widgets.panel import Panel
 
 class GameViewportPanel(Panel):
-    def __init__(self, x, y, width, height, engine=None, style=None):
-        super().__init__(x, y, width, height, title="Game View", style=style)
+    def __init__(self, *args, engine=None, style=None, **kwargs):
+        super().__init__(*args, title="Game View", style=style, **kwargs)
         self.engine = engine
 
     def draw(self, surface):
