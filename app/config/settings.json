@@ -1,4 +1,5 @@
-# app/config/settings.json
 {
-  "recent_projects": []
+  "theme": "dark",
+  "recent_projects": [],
+  "last_project": null
 }
