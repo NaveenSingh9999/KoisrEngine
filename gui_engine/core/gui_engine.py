@@ -26,8 +26,6 @@ class GuiEngine:
     def draw(self):
         self.layout_manager.draw(self.screen)
         self.gui.draw()
-        if self.engine:
-            self.engine.render()
 
     def handle_event(self, event):
         self.layout_manager.handle_event(event)
