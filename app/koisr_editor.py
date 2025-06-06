@@ -30,24 +30,55 @@ def main():
     home_screen = None
 
     def on_create():
-        # TODO: Show project creation dialog
-        print("Create New Project clicked")
-        # For now, just switch to editor
-        app_state['mode'] = 'editor'
-        app_state['project_path'] = None
+        # Open a file dialog to select a directory for the new project
+        import tkinter as tk
+        from tkinter import filedialog, simpledialog
+        root = tk.Tk()
+        root.withdraw()
+        project_dir = filedialog.askdirectory(title="Select New Project Directory")
+        if project_dir:
+            project_name = simpledialog.askstring("Project Name", "Enter project name:")
+            if project_name:
+                project_path = os.path.join(project_dir, project_name + ".koisrproj")
+                with open(project_path, 'w') as f:
+                    f.write('{"name": "%s", "created": "%s"}' % (project_name, pygame.time.get_ticks()))
+                project_manager.add_recent_project(project_path)
+                project_manager.set_last_project(project_path)
+                print(f"Created new project at {project_path}")
+                app_state['mode'] = 'editor'
+                app_state['project_path'] = project_path
+            else:
+                print("Project creation cancelled (no name)")
+        else:
+            print("Project creation cancelled (no directory)")
 
     def on_open():
-        # TODO: Show file dialog to select .koisrproj
-        print("Open Existing Project clicked")
-        # For now, just switch to editor
-        app_state['mode'] = 'editor'
-        app_state['project_path'] = None
+        # Open a file dialog to select an existing .koisrproj file
+        import tkinter as tk
+        from tkinter import filedialog
+        root = tk.Tk()
+        root.withdraw()
+        file_path = filedialog.askopenfilename(title="Open Koisr Project", filetypes=[("Koisr Project", "*.koisrproj")])
+        if file_path:
+            project_manager.add_recent_project(file_path)
+            project_manager.set_last_project(file_path)
+            print(f"Opened project: {file_path}")
+            app_state['mode'] = 'editor'
+            app_state['project_path'] = file_path
+        else:
+            print("Open project cancelled")
 
     def on_resume():
         last = project_manager.get_last_project()
-        print(f"Resume Last Project: {last}")
-        app_state['mode'] = 'editor'
-        app_state['project_path'] = last
+        if last and os.path.exists(last):
+            print(f"Resuming last project: {last}")
+            project_manager.set_last_project(last)
+            app_state['mode'] = 'editor'
+            app_state['project_path'] = last
+        else:
+            print("No last project to resume or file missing.")
+            app_state['mode'] = 'home'
+            app_state['project_path'] = None
 
     # Show HomeScreen first
     home_screen = HomeScreen(
@@ -59,6 +90,7 @@ def main():
     running = True
     while running:
         dt = clock.tick(FPS) / 1000.0
+        pygame.display.set_caption(f"KoisrEditor - FPS: {int(clock.get_fps())}")
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -66,12 +98,10 @@ def main():
                 home_screen.handle_event(event)
             elif app_state['mode'] == 'editor' and gui_engine:
                 gui_engine.handle_event(event)
-        # TODO: Game engine update (if running game in editor)
         screen.fill((30, 32, 36))
         if app_state['mode'] == 'home':
             home_screen.update(dt)
             home_screen.draw(screen)
-            # If mode switched, initialize editor
             if app_state['mode'] == 'editor' and gui_engine is None:
                 gui_engine = GuiEngine(screen)
         elif app_state['mode'] == 'editor' and gui_engine:
