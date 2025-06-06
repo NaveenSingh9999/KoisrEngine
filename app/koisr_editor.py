@@ -116,8 +116,17 @@ def main():
             home_screen.update(dt)
             home_screen.draw(screen)
         elif app_state['mode'] == 'editor' and gui_engine:
+            print('[DEBUG] Calling gui_engine.update(dt)')
             gui_engine.update(dt)
+            print('[DEBUG] Calling gui_engine.draw()')
             gui_engine.draw()
+            try:
+                import OpenGL.GL as gl
+                err = gl.glGetError()
+                if err != 0:
+                    print(f'[OpenGL ERROR] glGetError() returned: {err}')
+            except Exception as e:
+                print(f'[OpenGL DEBUG] Exception during glGetError: {e}')
         pygame.display.flip()
 
     pygame.quit()
