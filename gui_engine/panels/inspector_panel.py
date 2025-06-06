@@ -1,11 +1,10 @@
 from koisrgui.widgets.panel import Panel
 from koisrgui.widgets.label import Label
 from koisrgui.widgets.button import Button
-from koisrgui.widgets.label import Label
 
 class InspectorPanel(Panel):
-    def __init__(self, engine, *args, **kwargs):
-        super().__init__(title="Inspector", *args, **kwargs)
+    def __init__(self, x, y, width, height, engine=None, style=None):
+        super().__init__(x, y, width, height, title="Inspector", style=style)
         self.engine = engine
         self._build_ui()
     def _build_ui(self):
