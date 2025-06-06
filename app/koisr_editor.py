@@ -18,8 +18,8 @@ FPS = 60
 def main():
     pygame.init()
     pygame.display.set_caption("KoisrEditor")
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF | pygame.OPENGL)
-
+    # Use SW surface for HomeScreen (no OPENGL flag)
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF)
     # Splash/loading screen
     from app.startup.loader import show_splash
     show_splash(screen)
@@ -103,6 +103,8 @@ def main():
             home_screen.update(dt)
             home_screen.draw(screen)
             if app_state['mode'] == 'editor' and gui_engine is None:
+                # Switch to OpenGL surface for editor
+                screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF | pygame.OPENGL)
                 gui_engine = GuiEngine(screen)
         elif app_state['mode'] == 'editor' and gui_engine:
             gui_engine.update(dt)
