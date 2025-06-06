@@ -42,9 +42,9 @@ class LayoutManager:
         if self.root_layout:
             self.root_layout.update(dt)
 
-    def draw(self):
+    def draw(self, surface):
         if self.root_layout:
-            self.root_layout.draw()
+            self.root_layout.draw(surface)
 
     def handle_event(self, event):
         if self.root_layout:

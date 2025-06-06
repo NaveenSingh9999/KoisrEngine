@@ -19,7 +19,7 @@ class GuiEngine:
         self.gui.update(dt)
 
     def draw(self):
-        self.layout_manager.draw()
+        self.layout_manager.draw(self.screen)
         self.gui.draw()
 
     def handle_event(self, event):
