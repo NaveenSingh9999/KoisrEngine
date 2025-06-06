@@ -1,8 +1,7 @@
 from koisrgui.widgets.panel import Panel
 from koisrgui.widgets.label import Label
 from koisrgui.widgets.button import Button
-from gui_engine.state.global_state import GlobalState
-import pygame
+from koisrgui.widgets.label import Label
 
 class InspectorPanel(Panel):
     def __init__(self, engine, *args, **kwargs):
@@ -11,33 +10,27 @@ class InspectorPanel(Panel):
         self._build_ui()
     def _build_ui(self):
         self.children.clear()
-        obj = self.engine.get_selected_object()
-        y = self.y + 32
+        obj = getattr(self.engine, 'selected_object', None)
         if obj:
-            self.add_child(Label(self.x + 8, y, self.width - 16, 28, f"Name: {obj.name}"))
-            y += 36
+            self.add_child(Label(self.x + 8, self.y + 32, 180, 24, f"Name: {obj.name}"))
             t = obj.transform
-            for i, axis in enumerate(['X', 'Y', 'Z']):
-                self.add_child(Label(self.x + 8, y, 40, 28, f"Pos {axis}:"))
-                self.add_child(Button(self.x + 56, y, 60, 28, str(round(t.position[i], 2)), on_click=lambda idx=i: self.edit_value(obj, 'position', idx)))
-                y += 32
-            for i, axis in enumerate(['X', 'Y', 'Z']):
-                self.add_child(Label(self.x + 8, y, 40, 28, f"Rot {axis}:"))
-                self.add_child(Button(self.x + 56, y, 60, 28, str(round(t.rotation[i], 2)), on_click=lambda idx=i: self.edit_value(obj, 'rotation', idx)))
-                y += 32
-            for i, axis in enumerate(['X', 'Y', 'Z']):
-                self.add_child(Label(self.x + 8, y, 40, 28, f"Scale {axis}:"))
-                self.add_child(Button(self.x + 56, y, 60, 28, str(round(t.scale[i], 2)), on_click=lambda idx=i: self.edit_value(obj, 'scale', idx)))
-                y += 32
-    def edit_value(self, obj, attr, idx):
-        import tkinter as tk
-        from tkinter import simpledialog
-        root = tk.Tk()
-        root.withdraw()
-        val = simpledialog.askfloat(f"Edit {attr}", f"Enter new value for {attr}[{idx}]:", initialvalue=getattr(obj.transform, attr)[idx])
-        if val is not None:
-            getattr(obj.transform, attr)[idx] = val
-            self._build_ui()
+            # Position
+            self.add_child(Label(self.x + 8, self.y + 64, 60, 24, "Position:"))
+            for i, axis in enumerate('XYZ'):
+                self.add_child(Label(self.x + 80 + i*60, self.y + 64, 40, 24, f"{t.position[i]:.2f}"))
+            # Rotation
+            self.add_child(Label(self.x + 8, self.y + 96, 60, 24, "Rotation:"))
+            for i, axis in enumerate('XYZ'):
+                self.add_child(Label(self.x + 80 + i*60, self.y + 96, 40, 24, f"{t.rotation[i]:.2f}"))
+            # Scale
+            self.add_child(Label(self.x + 8, self.y + 128, 60, 24, "Scale:"))
+            for i, axis in enumerate('XYZ'):
+                self.add_child(Label(self.x + 80 + i*60, self.y + 128, 40, 24, f"{t.scale[i]:.2f}"))
+        else:
+            self.add_child(Label(self.x + 8, self.y + 32, 180, 24, "No object selected"))
     def update(self, dt):
         self._build_ui()
-        super().update(dt)
+        for child in self.children:
+            child.update(dt)
+    def draw(self, surface):
+        super().draw(surface)

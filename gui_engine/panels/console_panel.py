@@ -8,8 +8,11 @@ class ConsolePanel(Panel):
         self._build_ui()
     def _build_ui(self):
         self.children.clear()
-        y = self.y + 32
-        self.add_child(Label(self.x + 8, y, self.width - 16, 28, "Console output will appear here."))
+        # For now, show a static message or engine log if available
+        self.add_child(Label(self.x + 8, self.y + 32, self.width - 16, 24, "Console output will appear here."))
     def update(self, dt):
         self._build_ui()
-        super().update(dt)
+        for child in self.children:
+            child.update(dt)
+    def draw(self, surface):
+        super().draw(surface)

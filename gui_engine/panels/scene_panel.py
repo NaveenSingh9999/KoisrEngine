@@ -1,31 +1,37 @@
 from koisrgui.widgets.panel import Panel
-from koisrgui.widgets.button import Button
 from koisrgui.widgets.label import Label
-from gui_engine.state.global_state import GlobalState
+from koisrgui.widgets.button import Button
 
 class ScenePanel(Panel):
-    def __init__(self, engine, *args, **kwargs):
-        super().__init__(title="Scene", *args, **kwargs)
+    def __init__(self, x, y, width, height, engine=None, style=None):
+        super().__init__(x, y, width, height, title="Scene", style=style)
         self.engine = engine
         self.selected_id = None
         self._build_ui()
+
     def _build_ui(self):
         self.children.clear()
-        y = self.y + 32
-        for obj in self.engine.get_game_objects():
-            btn = Button(self.x + 8, y, self.width - 16, 28, obj.name, on_click=lambda o=obj: self.select_object(o))
-            if self.selected_id == obj.id:
-                btn.set_style({'bg': (80, 120, 200)})
-            self.add_child(btn)
-            y += 36
+        if self.engine:
+            y_offset = self.y + 32
+            for obj in self.engine.get_game_objects():
+                btn = Button(self.x + 8, y_offset, self.width - 16, 28, obj.name, on_click=lambda o=obj: self.select_object(o))
+                self.add_child(btn)
+                y_offset += 36
+
     def select_object(self, obj):
         self.selected_id = obj.id
-        self.engine.set_selected_object(obj)
+        # Notify global state or InspectorPanel (to be implemented)
+        if hasattr(self.engine, 'selected_object'):
+            self.engine.selected_object = obj
         self._build_ui()
+
     def update(self, dt):
-        # Rebuild UI if objects change
         self._build_ui()
-        super().update(dt)
+        for child in self.children:
+            child.update(dt)
+
+    def draw(self, surface):
+        super().draw(surface)
 
 class InspectorPanel(Panel):
     def __init__(self, *args, **kwargs):

@@ -2,24 +2,28 @@ import json
 from koisrgui.core.manager import GUIManager
 from gui_engine.layout.layout_manager import LayoutManager
 from gui_engine.state.global_state import GlobalState
-from engine.engine import Engine
 
 class GuiEngine:
     def __init__(self, screen, layout_config_path=None, engine=None):
         self.screen = screen
-        self.engine = engine or Engine()
+        self.engine = engine
         self.gui = GUIManager(screen)
         self.state = GlobalState()
-        self.layout_manager = LayoutManager(self.gui, self.state, self.engine)
-        self.layout_manager.load_default_layout()
+        self.layout_manager = LayoutManager(self.gui, self.state, engine=self.engine)
+        if layout_config_path:
+            self.layout_manager.load_layout(layout_config_path)
+        else:
+            self.layout_manager.load_default_layout()
 
     def update(self, dt):
-        self.engine.update(dt)
+        if self.engine:
+            self.engine.update(dt)
         self.layout_manager.update(dt)
         self.gui.update(dt)
 
     def draw(self):
-        self.engine.render()
+        if self.engine:
+            self.engine.render()
         self.layout_manager.draw(self.screen)
         self.gui.draw()
 
