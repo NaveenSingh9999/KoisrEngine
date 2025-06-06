@@ -17,6 +17,7 @@ class LayoutManager:
         self.gui.add_widget(self.root_layout)
 
     def load_default_layout(self):
+        print('[DEBUG] LayoutManager.load_default_layout called')
         # Main editor layout: Toolbar (top), Scene (left), Game View (center), Inspector (right), Asset/Console (bottom)
         self.root_layout = VerticalLayout(0, 0)
         toolbar = ToolbarPanel(0, 0, 1200, 40, engine=self.engine)
@@ -38,6 +39,7 @@ class LayoutManager:
         self.root_layout.add_child(toolbar)
         self.root_layout.add_child(main_split)
         self.gui.add_widget(self.root_layout)
+        print('[DEBUG] LayoutManager.load_default_layout finished')
 
     def _parse_layout(self, cfg):
         # TODO: Parse layout config to build layout tree

@@ -5,6 +5,7 @@ from gui_engine.state.global_state import GlobalState
 
 class GuiEngine:
     def __init__(self, screen, layout_config_path=None, engine=None):
+        print('[DEBUG] GuiEngine.__init__ called')
         self.screen = screen
         self.engine = engine
         self.gui = GUIManager(screen)
@@ -14,6 +15,7 @@ class GuiEngine:
             self.layout_manager.load_layout(layout_config_path)
         else:
             self.layout_manager.load_default_layout()
+        print('[DEBUG] GuiEngine.__init__ finished')
 
     def update(self, dt):
         if self.engine:
