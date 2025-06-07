@@ -18,62 +18,45 @@ class GuiEngine:
         self.gui = GUIManager(screen)
         self.state = GlobalState()
         self.panels = {}
+        self.layout_manager = LayoutManager(self.gui, self.state, engine=self.engine)
         self._build_editor_layout()
         print('[DEBUG] GuiEngine.__init__ finished')
 
     def _build_editor_layout(self):
-        # --- Toolbar (top) ---
-        toolbar = ToolbarPanel(0, 0, 1200, 40, engine=self.engine)
-        self.panels['toolbar'] = toolbar
-
-        # --- Main horizontal split ---
-        main_split = HorizontalLayout(0, 40)
-
-        # --- Scene Panel (left) ---
-        scene_panel = ScenePanel(0, 40, 220, 600, engine=self.engine)
-        self.panels['scene'] = scene_panel
-
-        # --- Center vertical split (Game Viewport + Console) ---
-        center_split = VerticalLayout(220, 40)
-        game_view = GameViewportPanel(220, 40, 760, 400, engine=self.engine)
-        self.panels['game_view'] = game_view
-        # Console panel (bottom of center)
-        console_panel = ConsolePanel(220, 440, 760, 120, engine=self.engine)
-        self.panels['console'] = console_panel
-        center_split.add_child(game_view)
-        center_split.add_child(console_panel)
-
-        # --- Right vertical split (Inspector + Assets) ---
-        right_split = VerticalLayout(980, 40)
-        inspector_panel = InspectorPanel(980, 40, 220, 300, engine=self.engine)
-        self.panels['inspector'] = inspector_panel
-        asset_browser = AssetBrowserPanel(980, 340, 220, 220, engine=self.engine)
-        self.panels['assets'] = asset_browser
-        right_split.add_child(inspector_panel)
-        right_split.add_child(asset_browser)
-
-        # --- Assemble main split ---
-        main_split.add_child(scene_panel)
-        main_split.add_child(center_split)
-        main_split.add_child(right_split)
-
-        # --- Root vertical layout ---
-        self.root_layout = VerticalLayout(0, 0)
-        self.root_layout.add_child(toolbar)
-        self.root_layout.add_child(main_split)
-        self.gui.add_widget(self.root_layout)
-
-        # --- Window menu for toggling panels ---
+        # Use LayoutManager to build the main editor layout
+        self.layout_manager.load_default_layout()
+        # Collect all panels for toggling
+        # The layout_manager creates the panels, so we need to find them in the layout tree
+        self._collect_panels(self.layout_manager.root_layout)
+        # Add Window menu for toggling panels
         self._add_window_menu()
 
+    def _collect_panels(self, widget):
+        # Recursively collect all panels by type
+        from gui_engine.panels import ScenePanel, InspectorPanel, AssetBrowserPanel, ConsolePanel, GameViewportPanel, ToolbarPanel
+        if isinstance(widget, ScenePanel):
+            self.panels['scene'] = widget
+        elif isinstance(widget, InspectorPanel):
+            self.panels['inspector'] = widget
+        elif isinstance(widget, AssetBrowserPanel):
+            self.panels['assets'] = widget
+        elif isinstance(widget, ConsolePanel):
+            self.panels['console'] = widget
+        elif isinstance(widget, GameViewportPanel):
+            self.panels['game_view'] = widget
+        elif isinstance(widget, ToolbarPanel):
+            self.panels['toolbar'] = widget
+        for child in getattr(widget, 'children', []):
+            self._collect_panels(child)
+
     def _add_window_menu(self):
-        # Simple top-left menu for toggling panels
-        menu_panel = Panel(10, 10, 120, 200, title="Window")
+        # Simple floating menu for toggling panel visibility
+        menu_panel = Panel(10, 10, 140, 220, title="Window")
         y = 40
         for key, panel in self.panels.items():
             def make_toggle(panel=panel):
                 return lambda: self._toggle_panel(panel)
-            btn = Button(20, y, 80, 28, f"{key.title()}", on_click=make_toggle(panel()))
+            btn = Button(20, y, 100, 28, f"{key.title()}", on_click=make_toggle(panel))
             menu_panel.add_child(btn)
             y += 36
         self.gui.add_widget(menu_panel)
@@ -84,13 +67,13 @@ class GuiEngine:
     def update(self, dt):
         if self.engine:
             self.engine.update(dt)
-        self.root_layout.update(dt)
+        self.layout_manager.update(dt)
         self.gui.update(dt)
 
     def draw(self):
-        self.root_layout.draw(self.screen)
+        self.layout_manager.draw(self.screen)
         self.gui.draw()
 
     def handle_event(self, event):
-        self.root_layout.handle_event(event)
+        self.layout_manager.handle_event(event)
         self.gui.handle_event(event)
