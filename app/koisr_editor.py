@@ -36,7 +36,7 @@ def main():
     def enter_editor(project_path):
         nonlocal screen, gui_engine, home_screen, engine_backend
         global_state['project_path'] = project_path
-        # Switch to editor mode and build the full editor UI
+        # Use Pygame 2D surface for editor UI (no OPENGL flag)
         screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF)
         pygame.font.quit()
         pygame.font.init()
@@ -104,7 +104,7 @@ def main():
     # Show HomeScreen first
     home_screen = HomeScreen(
         SCREEN_WIDTH, SCREEN_HEIGHT, project_manager,
-        on_create=on_create, on_open=on_open, on_resume=on_resume
+        on_create=on_create, on_open=on_resume
     )
 
     clock = pygame.time.Clock()
