@@ -1,10 +1,10 @@
-from koisrgui.widgets.panel import Panel
+from koisrgui.widgets.dockable_panel import DockablePanel
 from koisrgui.widgets.button import Button
 from koisrgui.widgets.label import Label
 
-class ToolbarPanel(Panel):
+class ToolbarPanel(DockablePanel):
     def __init__(self, *args, engine=None, style=None, **kwargs):
-        super().__init__(*args, title=None, style=style, **kwargs)
+        super().__init__(*args, title="Toolbar", style=style, engine=engine, **kwargs)
         self.engine = engine
         self._build_ui()
 
@@ -111,8 +111,10 @@ class ToolbarPanel(Panel):
             child.update(dt)
 
     def draw(self, surface):
-        # Draw toolbar background
+        # Draw base panel
         import pygame
+        
+        # Draw toolbar background (custom for toolbar)
         pygame.draw.rect(surface, (40, 42, 48), (self.x, self.y, self.width, self.height))
         # Draw separator line at bottom
         pygame.draw.line(surface, (60, 62, 68), (self.x, self.y + self.height - 1), 
