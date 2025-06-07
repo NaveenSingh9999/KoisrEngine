@@ -32,23 +32,3 @@ class ScenePanel(Panel):
 
     def draw(self, surface):
         super().draw(surface)
-
-class InspectorPanel(Panel):
-    def __init__(self, *args, engine=None, style=None, **kwargs):
-        super().__init__(title="Inspector", *args, style=style, **kwargs)
-        # Add property widgets here
-
-class AssetBrowserPanel(Panel):
-    def __init__(self, *args, engine=None, style=None, **kwargs):
-        super().__init__(title="Assets", *args, style=style, **kwargs)
-        # Add asset tree/list here
-
-class ConsolePanel(Panel):
-    def __init__(self, *args, engine=None, style=None, **kwargs):
-        super().__init__(title="Console", *args, style=style, **kwargs)
-        # Add log output widget here
-
-class GameViewportPanel(Panel):
-    def __init__(self, *args, engine=None, style=None, **kwargs):
-        super().__init__(title="Game", *args, style=style, **kwargs)
-        # Add OpenGL texture view here
