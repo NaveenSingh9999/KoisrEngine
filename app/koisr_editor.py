@@ -48,6 +48,8 @@ def main():
                 
             # Use Pygame 2D surface for editor UI (no OPENGL flag)
             screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF)
+            
+            # Reinitialize font subsystem to prevent font rendering issues
             pygame.font.quit()
             pygame.font.init()
             
@@ -64,7 +66,18 @@ def main():
                     # Here you would load the scene data
             
             # Initialize GUI with engine backend
+            print(f"[DEBUG] Creating GuiEngine with engine_backend={engine_backend}")
             gui_engine = GuiEngine(screen, layout_config_path=None, engine=engine_backend)
+            
+            # Show brief loading message
+            font = pygame.font.SysFont(None, 32)
+            loading_text = font.render(f"Loading project: {project_data.get('name', 'Untitled')}", True, (220, 220, 220))
+            screen.fill((30, 32, 36))
+            screen.blit(loading_text, (SCREEN_WIDTH//2 - loading_text.get_width()//2, SCREEN_HEIGHT//2))
+            pygame.display.flip()
+            
+            # Verify panels were created properly
+            print(f"[DEBUG] Panels created: {list(gui_engine.panels.keys()) if hasattr(gui_engine, 'panels') else 'No panels found'}")
             
             # Close home screen and switch to editor mode
             home_screen = None
@@ -223,6 +236,10 @@ def main():
             gui_engine.update(dt)
             print('[DEBUG] Calling gui_engine.draw()')
             gui_engine.draw()
+            
+            # Force pygame to update the display
+            pygame.display.flip()
+            
             try:
                 import OpenGL.GL as gl
                 err = gl.glGetError()

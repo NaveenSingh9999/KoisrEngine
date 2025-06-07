@@ -8,6 +8,10 @@ class Panel(Widget):
         self.title = title
         if style:
             self.set_style(style)
+    
+    def set_dock_manager(self, dock_manager):
+        # Base implementation does nothing
+        pass
 
     def draw(self, surface):
         if not self.visible:

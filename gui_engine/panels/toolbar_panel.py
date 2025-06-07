@@ -8,6 +8,10 @@ class ToolbarPanel(DockablePanel):
         self.engine = engine
         self._build_ui()
 
+    def set_dock_manager(self, dock_manager):
+        super().set_dock_manager(dock_manager)
+        # Additional toolbar-specific dock manager setup can go here if needed
+
     def _build_ui(self):
         self.children.clear()
         

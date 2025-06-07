@@ -44,10 +44,13 @@ class DockArea:
         self._update_panel_positions()
         
     def draw(self, surface):
+        print(f"[DEBUG] DockArea.draw() called for {self.position} with {len(self.panels)} panels")
+        
         # Draw all panels in the dock area
         for i, panel in enumerate(self.panels):
             if i == self.active_panel_index:
                 panel.visible = True
+                print(f"[DEBUG] Drawing panel '{panel.title}' in position {self.position}")
             else:
                 panel.visible = False
             
@@ -156,11 +159,15 @@ class DockManager:
             self.undock_panel(panel)
             # Then add to the new dock area
             self.dock_areas[position].add_panel(panel)
+            # Make sure panel has a reference to the dock manager
             panel.set_dock_manager(self)
+            print(f"[DEBUG] Added panel '{panel.title}' to position '{position}'")
             
     def remove_panel(self, panel):
         for area in self.dock_areas.values():
-            area.remove_panel(panel)
+            if panel in area.panels:
+                area.remove_panel(panel)
+                print(f"[DEBUG] Removed panel '{panel.title}' from dock area")
             
     def undock_panel(self, panel):
         for area in self.dock_areas.values():
@@ -322,11 +329,15 @@ class DockManager:
         return False
         
     def _update_dock_areas(self):
+        # Recalculate and resize all dock areas based on current divider positions
         main_y = self.toolbar_height
         main_height = self.screen_height - self.toolbar_height - self.bottom_height - self.status_bar_height
         
-        # Update dock area positions and sizes
-        self.dock_areas['left'].resize(0, main_y, self.left_width, main_height)
+        # Update all dock areas with new positions and sizes
+        self.dock_areas['left'].resize(
+            0, main_y, 
+            self.left_width, main_height
+        )
         
         self.dock_areas['center'].resize(
             self.left_width, main_y, 
@@ -349,25 +360,43 @@ class DockManager:
             self.screen_width, self.toolbar_height
         )
         
+        print(f"[DEBUG] Updated dock areas: left={self.left_width}, right={self.right_width}, bottom={self.bottom_height}")
+        
     def draw(self, surface):
+        print(f"[DEBUG] DockManager.draw() called with {len(self.dock_areas)} dock areas")
+        
+        # Draw all dock areas
+        for position, area in self.dock_areas.items():
+            print(f"[DEBUG] Drawing dock area '{position}' with {len(area.panels)} panels")
+            area.draw(surface)
+            
         # Draw dividers
-        divider_color = (70, 70, 70)
+        divider_width = 5
+        divider_color = (80, 80, 90)
         
         # Left divider
-        pygame.draw.rect(surface, divider_color, 
-                       (self.left_width - 2, self.toolbar_height, 
-                        4, self.screen_height - self.toolbar_height - self.bottom_height - self.status_bar_height))
+        left_divider_rect = pygame.Rect(
+            self.left_width - divider_width//2, 
+            self.toolbar_height, 
+            divider_width, 
+            self.screen_height - self.toolbar_height - self.bottom_height - self.status_bar_height
+        )
+        pygame.draw.rect(surface, divider_color, left_divider_rect)
         
         # Right divider
-        pygame.draw.rect(surface, divider_color, 
-                       (self.screen_width - self.right_width - 2, self.toolbar_height, 
-                        4, self.screen_height - self.toolbar_height - self.bottom_height - self.status_bar_height))
+        right_divider_rect = pygame.Rect(
+            self.screen_width - self.right_width - divider_width//2, 
+            self.toolbar_height, 
+            divider_width, 
+            self.screen_height - self.toolbar_height - self.bottom_height - self.status_bar_height
+        )
+        pygame.draw.rect(surface, divider_color, right_divider_rect)
         
         # Bottom divider
-        pygame.draw.rect(surface, divider_color, 
-                       (0, self.screen_height - self.bottom_height - self.status_bar_height - 2, 
-                        self.screen_width, 4))
-        
-        # Draw all dock areas (which will draw their panels)
-        for area in self.dock_areas.values():
-            area.draw(surface)
+        bottom_divider_rect = pygame.Rect(
+            0, 
+            self.screen_height - self.bottom_height - self.status_bar_height - divider_width//2, 
+            self.screen_width, 
+            divider_width
+        )
+        pygame.draw.rect(surface, divider_color, bottom_divider_rect)

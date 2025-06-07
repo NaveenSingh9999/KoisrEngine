@@ -188,5 +188,19 @@ class LayoutManager:
     def draw(self, surface):
         # Draw the dock manager (which will draw all docked panels)
         if self.dock_manager:
+            print(f"[DEBUG] LayoutManager.draw() calling dock_manager.draw()")
             self.dock_manager.draw(surface)
+            
+            # Additional drawing for debug visualization
+            import pygame
+            for name, panel in self.panels.items():
+                # Draw a box around each panel for debugging
+                if panel.visible:
+                    pygame.draw.rect(
+                        surface, 
+                        (255, 0, 0), 
+                        (panel.x, panel.y, panel.width, panel.height), 
+                        1
+                    )
+                    print(f"[DEBUG] Panel '{name}' at ({panel.x}, {panel.y}, {panel.width}, {panel.height})")
 

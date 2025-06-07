@@ -70,10 +70,34 @@ class GuiEngine:
     def draw(self):
         # Fill background
         self.screen.fill((30, 30, 30))
+        
+        # Debug the panels state
+        print(f"[DEBUG] Drawing {len(self.layout_manager.panels)} panels")
+        panel_names = [f"{k}:{v.title}" for k, v in self.layout_manager.panels.items()]
+        print(f"[DEBUG] Panel names: {panel_names}")
+        
         # Draw layout
         self.layout_manager.draw(self.screen)
+        
         # Draw GUI widgets
         self.gui.draw()
+        
+        # Check if any panels are visible
+        visible_count = sum(1 for p in self.layout_manager.panels.values() if p.visible)
+        print(f"[DEBUG] Visible panels: {visible_count}/{len(self.layout_manager.panels)}")
+        
+        # Ensure that the window is properly updated
+        pygame.display.update()
+        
+        # Check for any errors in OpenGL rendering if using OpenGL
+        try:
+            if pygame.display.get_surface().get_flags() & pygame.OPENGL:
+                import OpenGL.GL as gl
+                err = gl.glGetError()
+                if err != 0:
+                    print(f'[OpenGL ERROR] glGetError() returned: {err}')
+        except Exception as e:
+            print(f'[DEBUG] Exception during draw: {e}')
 
     def handle_event(self, event):
         # First try to handle with layout manager (which handles docking)
