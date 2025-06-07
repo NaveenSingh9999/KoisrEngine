@@ -12,7 +12,6 @@ class AssetBrowserPanel(Panel):
         self.add_child(Label(self.x + 8, self.y + 32, self.width - 16, 24, "Asset list will appear here."))
 
     def update(self, dt):
-        self._build_ui()
         for child in self.children:
             child.update(dt)
 

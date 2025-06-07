@@ -11,7 +11,6 @@ class ConsolePanel(Panel):
         # For now, show a static message or engine log if available
         self.add_child(Label(self.x + 8, self.y + 32, self.width - 16, 24, "Console output will appear here."))
     def update(self, dt):
-        self._build_ui()
         for child in self.children:
             child.update(dt)
     def draw(self, surface):

@@ -28,7 +28,6 @@ class InspectorPanel(Panel):
         else:
             self.add_child(Label(self.x + 8, self.y + 32, 180, 24, "No object selected"))
     def update(self, dt):
-        self._build_ui()
         for child in self.children:
             child.update(dt)
     def draw(self, surface):
