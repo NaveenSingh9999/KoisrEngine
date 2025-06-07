@@ -1,14 +1,31 @@
 import json
-from gui_engine.panels import *
+import pygame
+from gui_engine.layout.dock_manager import DockManager
+from koisrgui.widgets.dockable_panel import DockablePanel
 from koisrgui.layouts.horizontal import HorizontalLayout
 from koisrgui.layouts.vertical import VerticalLayout
+from koisrgui.widgets.panel import Panel
+from koisrgui.widgets.label import Label
+from koisrgui.themes.dark import DARK_THEME
+from gui_engine.panels.scene_panel import ScenePanel
+from gui_engine.panels.game_viewport_panel import GameViewportPanel
+from gui_engine.panels.inspector_panel import InspectorPanel
+from gui_engine.panels.asset_browser_panel import AssetBrowserPanel
+from gui_engine.panels.console_panel import ConsolePanel
+from gui_engine.panels.toolbar_panel import ToolbarPanel
 
 class LayoutManager:
     def __init__(self, gui, state, engine=None):
         self.gui = gui
         self.state = state
         self.engine = engine
+        self.screen_width = 1200
+        self.screen_height = 800
+        self.toolbar_height = 40
+        self.status_bar_height = 20
         self.root_layout = None
+        self.dock_manager = None
+        self.panels = {}
 
     def load_layout(self, path):
         with open(path, 'r') as f:
@@ -18,35 +35,165 @@ class LayoutManager:
 
     def load_default_layout(self):
         print('[DEBUG] LayoutManager.load_default_layout called')
-        # Main editor layout: Toolbar (top), Scene (left), Game View (center), Inspector (right), Asset/Console (bottom)
-        self.root_layout = VerticalLayout(0, 0)
-        toolbar = ToolbarPanel(0, 0, 1200, 40, engine=self.engine)
-        main_split = HorizontalLayout(0, 40)
-        scene_panel = ScenePanel(0, 40, 220, 600, engine=self.engine)
-        center_split = VerticalLayout(220, 40)
-        game_view = GameViewportPanel(220, 40, 760, 400, engine=self.engine)
-        console_panel = ConsolePanel(220, 440, 760, 120, engine=self.engine)
-        right_split = VerticalLayout(980, 40)
-        inspector_panel = InspectorPanel(980, 40, 220, 300, engine=self.engine)
-        asset_browser = AssetBrowserPanel(980, 340, 220, 220, engine=self.engine)
-        right_split.add_child(inspector_panel)
-        right_split.add_child(asset_browser)
-        center_split.add_child(game_view)
-        center_split.add_child(console_panel)
-        main_split.add_child(scene_panel)
-        main_split.add_child(center_split)
-        main_split.add_child(right_split)
-        self.root_layout.add_child(toolbar)
-        self.root_layout.add_child(main_split)
-        self.gui.add_widget(self.root_layout)
+        
+        # Initialize dock manager
+        self.dock_manager = DockManager(
+            self.screen_width, 
+            self.screen_height,
+            self.toolbar_height, 
+            self.status_bar_height
+        )
+        
+        # Background panel for the entire editor area
+        bg_panel = Panel(0, 0, self.screen_width, self.screen_height, title=None, 
+                       style={**DARK_THEME, 'bg': (30, 30, 30)})
+        self.gui.add_widget(bg_panel)
+        
+        # Create dockable panels
+        
+        # Toolbar panel (top)
+        toolbar = ToolbarPanel(
+            0, 0, 
+            self.screen_width, self.toolbar_height, 
+            engine=self.engine
+        )
+        
+        # Scene Hierarchy panel (left)
+        scene_panel = DockablePanel(
+            0, self.toolbar_height, 
+            int(self.screen_width * 0.2), int(self.screen_height * 0.6),
+            title="Scene Hierarchy", 
+            engine=self.engine,
+            style=DARK_THEME
+        )
+        scene_hierarchy = ScenePanel(
+            10, scene_panel.header_height + 10, 
+            scene_panel.width - 20, scene_panel.height - scene_panel.header_height - 20, 
+            engine=self.engine,
+            title=None
+        )
+        scene_panel.add_child(scene_hierarchy)
+        
+        # Game Viewport panel (center)
+        game_viewport_panel = DockablePanel(
+            int(self.screen_width * 0.2), self.toolbar_height, 
+            int(self.screen_width * 0.55), int(self.screen_height * 0.6),
+            title="Game View", 
+            engine=self.engine,
+            style=DARK_THEME
+        )
+        game_viewport = GameViewportPanel(
+            10, game_viewport_panel.header_height + 10, 
+            game_viewport_panel.width - 20, game_viewport_panel.height - game_viewport_panel.header_height - 20, 
+            engine=self.engine,
+            title=None
+        )
+        game_viewport_panel.add_child(game_viewport)
+        
+        # Inspector panel (right)
+        inspector_panel = DockablePanel(
+            int(self.screen_width * 0.75), self.toolbar_height, 
+            int(self.screen_width * 0.25), int(self.screen_height * 0.6),
+            title="Inspector", 
+            engine=self.engine,
+            style=DARK_THEME
+        )
+        inspector = InspectorPanel(
+            10, inspector_panel.header_height + 10, 
+            inspector_panel.width - 20, inspector_panel.height - inspector_panel.header_height - 20, 
+            engine=self.engine,
+            title=None
+        )
+        inspector_panel.add_child(inspector)
+        
+        # Asset Browser panel (bottom)
+        asset_panel = DockablePanel(
+            0, int(self.screen_height * 0.7), 
+            self.screen_width, int(self.screen_height * 0.25),
+            title="Asset Browser", 
+            engine=self.engine,
+            style=DARK_THEME
+        )
+        asset_browser = AssetBrowserPanel(
+            10, asset_panel.header_height + 10, 
+            asset_panel.width - 20, asset_panel.height - asset_panel.header_height - 20, 
+            engine=self.engine,
+            title=None
+        )
+        asset_panel.add_child(asset_browser)
+        
+        # Console panel (as a tab in bottom area)
+        console_panel = DockablePanel(
+            0, int(self.screen_height * 0.7), 
+            self.screen_width, int(self.screen_height * 0.25),
+            title="Console", 
+            engine=self.engine,
+            style=DARK_THEME
+        )
+        console = ConsolePanel(
+            10, console_panel.header_height + 10, 
+            console_panel.width - 20, console_panel.height - console_panel.header_height - 20, 
+            engine=self.engine,
+            title=None
+        )
+        console_panel.add_child(console)
+        
+        # Store panels for reference
+        self.panels = {
+            'toolbar': toolbar,
+            'scene': scene_panel,
+            'game_view': game_viewport_panel,
+            'inspector': inspector_panel,
+            'asset_browser': asset_panel,
+            'console': console_panel
+        }
+        
+        # Add panels to dock manager
+        self.dock_manager.add_panel(toolbar, 'top')
+        self.dock_manager.add_panel(scene_panel, 'left')
+        self.dock_manager.add_panel(game_viewport_panel, 'center')
+        self.dock_manager.add_panel(inspector_panel, 'right')
+        self.dock_manager.add_panel(asset_panel, 'bottom')
+        self.dock_manager.add_panel(console_panel, 'bottom')  # Will be in tabs with asset browser
+        
+        # Status bar at the bottom
+        status_bar = Panel(
+            0, self.screen_height - self.status_bar_height,
+            self.screen_width, self.status_bar_height,
+            title=None,
+            style={**DARK_THEME, 'bg': (40, 40, 40)}
+        )
+        status_label = Label(
+            10, self.screen_height - self.status_bar_height + 2,
+            300, 16,
+            "KoisrEngine Ready",
+            style={**DARK_THEME, 'font_size': 14}
+        )
+        status_bar.add_child(status_label)
+        
+        # Add status bar to GUI
+        self.gui.add_widget(status_bar)
+        
         print('[DEBUG] LayoutManager.load_default_layout finished')
 
     def _parse_layout(self, cfg):
         # TODO: Parse layout config to build layout tree
         pass
 
+    def handle_event(self, event):
+        if self.dock_manager:
+            return self.dock_manager.handle_event(event)
+        return False
+
     def update(self, dt):
-        if self.root_layout:
+        # Update panels
+        for panel in self.panels.values():
+            panel.update(dt)
+
+    def draw(self, surface):
+        # Draw the dock manager (which will draw all docked panels)
+        if self.dock_manager:
+            self.dock_manager.draw(surface)
             self.root_layout.update(dt)
 
     def draw(self, surface):
