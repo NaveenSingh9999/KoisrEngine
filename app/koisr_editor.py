@@ -39,6 +39,10 @@ def main():
         screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF | pygame.OPENGL)
         pygame.font.quit()
         pygame.font.init()
+        # After switching to editor mode, force a full rebuild of the editor UI
+        if gui_engine:
+            del gui_engine
+            gui_engine = None
         if engine_backend is None:
             from engine.engine import Engine
             engine_backend = Engine()
@@ -46,6 +50,11 @@ def main():
         home_screen = None
         app_state['mode'] = 'editor'
         print(f"[INFO] Entered editor with project: {project_path}")
+        # Force a redraw to ensure UI is built
+        screen.fill((30, 32, 36))
+        gui_engine.update(0)
+        gui_engine.draw()
+        pygame.display.flip()
 
     def on_create():
         # Open a file dialog to select a directory for the new project
@@ -98,7 +107,7 @@ def main():
     # Show HomeScreen first
     home_screen = HomeScreen(
         SCREEN_WIDTH, SCREEN_HEIGHT, project_manager,
-        on_create=on_create, on_open=on_open, on_resume=on_resume
+        on_create=on_create, on_open=on_resume
     )
 
     clock = pygame.time.Clock()
