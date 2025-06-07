@@ -36,13 +36,10 @@ def main():
     def enter_editor(project_path):
         nonlocal screen, gui_engine, home_screen, engine_backend
         global_state['project_path'] = project_path
-        screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF | pygame.OPENGL)
+        # Switch to editor mode and build the full editor UI
+        screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF)
         pygame.font.quit()
         pygame.font.init()
-        # After switching to editor mode, force a full rebuild of the editor UI
-        if gui_engine:
-            del gui_engine
-            gui_engine = None
         if engine_backend is None:
             from engine.engine import Engine
             engine_backend = Engine()
@@ -50,7 +47,7 @@ def main():
         home_screen = None
         app_state['mode'] = 'editor'
         print(f"[INFO] Entered editor with project: {project_path}")
-        # Force a redraw to ensure UI is built
+        # Build and show the editor UI immediately
         screen.fill((30, 32, 36))
         gui_engine.update(0)
         gui_engine.draw()
