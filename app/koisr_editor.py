@@ -47,11 +47,7 @@ def main():
         home_screen = None
         app_state['mode'] = 'editor'
         print(f"[INFO] Entered editor with project: {project_path}")
-        # Build and show the editor UI immediately
-        screen.fill((30, 32, 36))
-        gui_engine.update(0)
-        gui_engine.draw()
-        pygame.display.flip()
+        # Remove forced draw/update here to avoid double-drawing
 
     def on_create():
         # Open a file dialog to select a directory for the new project
