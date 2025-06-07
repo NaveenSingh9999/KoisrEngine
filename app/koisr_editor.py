@@ -104,7 +104,7 @@ def main():
     # Show HomeScreen first
     home_screen = HomeScreen(
         SCREEN_WIDTH, SCREEN_HEIGHT, project_manager,
-        on_create=on_create, on_open=on_resume
+        on_create=on_create, on_open=on_open, on_resume=on_resume
     )
 
     clock = pygame.time.Clock()
