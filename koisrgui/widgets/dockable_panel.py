@@ -6,7 +6,7 @@ from koisrgui.themes.dark import DARK_THEME
 class DockablePanel(Panel):
     RESIZE_BORDER_SIZE = 5
     
-    def __init__(self, x, y, width, height, title=None, style=None, min_width=100, min_height=100):
+    def __init__(self, x, y, width, height, title=None, style=None, min_width=100, min_height=100, engine=None, **kwargs):
         super().__init__(x, y, width, height, title, style or DARK_THEME)
         self.min_width = min_width
         self.min_height = min_height
@@ -20,6 +20,7 @@ class DockablePanel(Panel):
         self.is_docked = False
         self.collapsed = False
         self.previous_size = (width, height)
+        self.engine = engine  # Store the engine reference for use by child panels
         
         # Header area for dragging
         self.header_height = 30
