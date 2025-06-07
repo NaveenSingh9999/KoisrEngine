@@ -3,8 +3,8 @@ from koisrgui.widgets.label import Label
 from koisrgui.widgets.button import Button
 
 class AssetBrowserPanel(Panel):
-    def __init__(self, *args, engine=None, style=None, **kwargs):
-        super().__init__(*args, title="Assets", style=style, **kwargs)
+    def __init__(self, x, y, width=None, height=None, title=None, engine=None, style=None):
+        super().__init__(x, y, width, height, title=title or "Assets", style=style)
         self.engine = engine
         self.current_folder = "assets"  # Current folder being viewed
         self.selected_asset = None

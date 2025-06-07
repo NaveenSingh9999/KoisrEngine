@@ -3,8 +3,8 @@ from koisrgui.widgets.label import Label
 from koisrgui.widgets.button import Button
 
 class ScenePanel(Panel):
-    def __init__(self, *args, engine=None, style=None, **kwargs):
-        super().__init__(*args, title="Scene Hierarchy", style=style, **kwargs)
+    def __init__(self, x, y, width=None, height=None, title=None, engine=None, style=None):
+        super().__init__(x, y, width, height, title=title, style=style)
         self.engine = engine
         self.selected_id = None
         self.objects_expanded = {}  # Track expanded/collapsed state

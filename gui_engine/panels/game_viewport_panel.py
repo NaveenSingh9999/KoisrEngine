@@ -4,8 +4,8 @@ from koisrgui.widgets.label import Label
 import pygame
 
 class GameViewportPanel(Panel):
-    def __init__(self, *args, engine=None, style=None, **kwargs):
-        super().__init__(*args, title="Game View", style=style, **kwargs)
+    def __init__(self, x, y, width=None, height=None, title=None, engine=None, style=None):
+        super().__init__(x, y, width, height, title=title, style=style)
         self.engine = engine
         self.is_focused = False
         self.current_tool = "select"  # select, move, rotate, scale

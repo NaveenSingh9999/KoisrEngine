@@ -7,7 +7,7 @@ class DockablePanel(Panel):
     RESIZE_BORDER_SIZE = 5
     
     def __init__(self, x, y, width, height, title=None, style=None, min_width=100, min_height=100, engine=None, **kwargs):
-        super().__init__(x, y, width, height, title, style or DARK_THEME)
+        super().__init__(x, y, width, height, title=title, style=style or DARK_THEME)
         self.min_width = min_width
         self.min_height = min_height
         self.is_dragging = False
@@ -33,7 +33,7 @@ class DockablePanel(Panel):
         
     def handle_event(self, event):
         if not self.visible:
-            return
+            return False
         
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             mouse_x, mouse_y = event.pos
